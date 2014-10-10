@@ -20,7 +20,7 @@ randn (double mu, double sigma)
     static int call = 0;
     
     //static int seed = 0;
-    //srand(seed++);
+    srand((unsigned)time(NULL));
     
     if (call == 1)
     {
@@ -49,7 +49,7 @@ randn (double mu, double sigma)
 double
 randu(int a, int b)
 {
-    //srand(time(NULL));
+    srand((unsigned)time(NULL));
     //static int seed = 0;
     //srand(seed++);
     
