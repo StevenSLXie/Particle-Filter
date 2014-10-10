@@ -10,11 +10,29 @@
 #include <math.h>
 #include "random_number_gen.h"
 
-double measure_function(double x, double n)
+double *measure_function(double *x, double n, char dim)
 {
     //define your measure function z=f(x) here
     // x is the state
     // n is the noise covariance
-    return pow(x, 2)/20 + randn(0,n);
+    // dim is the dimension of the state. Here assume dim=2
+    if(2 == dim){
+        // define your function
+        static double r[2];
+        r[0] = (pow(x[0],2)/20+randn(0,n));
+        r[1] = (x[0]*x[1] + randn(0,n));
+        return r;
+    }
+    else if(1 == dim){
+        //case when dim = 1
+        static double r[1];
+        r[0] = (pow(x[0], 2)/20 + randn(0,n));
+        return r;
+    }
+    else
+        exit(0);
+    
+    // case when dim = 1
+    //return pow(x, 2)/20 + randn(0,n);
     
 }

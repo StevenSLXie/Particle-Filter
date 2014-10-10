@@ -9,6 +9,6 @@
 #ifndef Particle_Filter_measure_function_h
 #define Particle_Filter_measure_function_h
 
-double measure_function(double x, double n);
+double *measure_function(double *x, double n, char dim);
 
 #endif

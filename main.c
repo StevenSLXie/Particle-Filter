@@ -18,40 +18,60 @@
 int main(int argc, const char * argv[])
 {
     // Initialize variables
+    const char dim = 2;
     
-    double x = 0.1; //initial actual state
-    float n_sys_cov = 0.05; // noise covariance in the system
+
+    double x[dim] = {10,20}; //initial actual state
+    float n_sys_cov = 0.25; // noise covariance in the system
     float n_mea_cov = 0.02; // noise covariance in the measurement
     const int T = 100; // tracking times
     const int N = 30; // number of particles
-    double z = pow(x, 2)/20 + randn(0,n_mea_cov);
+    double z[dim];
+    double *p;
+    p = measure_function(x, n_mea_cov,dim);
+    for(int i = 0;i<dim;i++)
+        z[i] = *(p+i);
     
-    double x_p[N];
-    double z_p[N];
-    double weight[N];
+    double x_p[N][dim];  // particles
+    double z_p[N][dim];  // outputs of the particles
+    double weight[N]; // weights for resampling
     
-    int V = 1; // variance of the initial state
+    int V = 10; // variance of the initial state
     
     // Initialize the particles
     
     for(int i=0;i< N;i++)
-        x_p[i] = randn(x,sqrt(V));
+    {
+        for(int k=0;k<dim;k++){
+            x_p[i][k] = randn(x[k],sqrt(V));
+        }
+    }
     
     double sum = 0;
-    double *temp;  // a copy of the particle
-    temp = (double*)calloc(N,sizeof(double));
-    double x_est = 0;
+    double temp[N][dim];  // a copy of the particle
+    //temp = (double**)calloc(N*dim,sizeof(double));
+    
+    double x_est[2] = {0,0};
     
     // The estimation process
-    for(int t = 1;t <= T; t++){        
-        x = process_function(x, t, n_sys_cov);
-        z = measure_function(x, n_mea_cov);
+    for(int t = 1;t <= T; t++){
+        p = process_function(x, t, n_sys_cov,dim);
+        for(int k = 0;k < dim;k++)
+            x[k] = *(p+k);
+        p = measure_function(x, n_mea_cov,dim);
+        for(int k = 0;k<dim;k++)
+            z[k] = *(p+k);
         
         for(int i = 0;i < N;i++){
+            p = process_function(x_p[i], t, n_sys_cov,dim);
+            for(int k = 0;k<dim;k++)
+                x_p[i][k] = *(p+k);
             
-            x_p[i] = process_function(x_p[i], t, n_sys_cov);
-            z = measure_function(x, n_mea_cov);
-            weight[i] = exp(-pow(z-z_p[i],2)*0.5*n_mea_cov);
+            p = measure_function(x_p[i], n_mea_cov,dim);
+            for(int k = 0;k<dim;k++)
+                z_p[i][k] = *(p+k);
+
+            weight[i] = exp(-pow(z[0]-z_p[i][0],2)*0.5*n_mea_cov);
             //printf("%f\n",weight[i]);
         }
         
@@ -66,18 +86,29 @@ int main(int argc, const char * argv[])
         
         
         for(int i=0;i<N;i++)
-            temp[i] = x_p[i];
-        for(int i=0;i<N;i++){
-            x_p[i] = temp[sample_by_weight(weight, N)];
-            sum += x_p[i];
+        {
+            for(int k = 0;k<dim;k++){
+                temp[i][k] = x_p[i][k];
+            }
         }
-        x_est = sum / N;
-        sum = 0;
         
-        printf("%f\t%f\n",x,x_est);
+        int sample = 0;
+        for(int i=0;i<N;i++){
+            sample = sample_by_weight(weight, N);
+            for(int k = 0;k<dim;k++){
+                x_p[i][k] = temp[sample][k];
+                x_est[k] += x_p[i][k];
+            }
+        }
+        
+        for(int k=0;k<dim;k++)
+            x_est[k] = x_est[k] / N;
+        
+        for(int k=0;k<dim;k++)
+            printf("%f\t%f\n",x[k],x_est[k]);
     }
     
-    free(temp);
+    //free(temp);
     
     
         

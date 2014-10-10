@@ -8,6 +8,7 @@
 
 #include <math.h>
 #include <stdlib.h>
+#include <time.h>
 
 // generate a random number following normal distribution
 
@@ -17,6 +18,9 @@ randn (double mu, double sigma)
     double U1, U2, W, mult;
     static double X1, X2;
     static int call = 0;
+    
+    //static int seed = 0;
+    //srand(seed++);
     
     if (call == 1)
     {
@@ -45,6 +49,10 @@ randn (double mu, double sigma)
 double
 randu(int a, int b)
 {
+    //srand(time(NULL));
+    //static int seed = 0;
+    //srand(seed++);
+    
     double u = (((double) rand() / RAND_MAX) + 1)/2;
     return a+(b-a)*u;
 }
@@ -52,9 +60,9 @@ randu(int a, int b)
 int
 sample_by_weight(double weight[], int N)
 {
-    //double *sum;
-    //sum = (double*)calloc(N,sizeof(double));
-    double sum[N];
+    double *sum;
+    sum = (double*)calloc(N,sizeof(double));
+    //double sum[N];
     
     for(int i =0;i<N;i++)
         sum[i] = 0;
@@ -69,7 +77,7 @@ sample_by_weight(double weight[], int N)
     double x = randu(0,1);
     for(int i = 0;i<N;i++){
         if(sum[i]>x){
-            //free(sum);
+            free(sum);
             return i;
         }
     }

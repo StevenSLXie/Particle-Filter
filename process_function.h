@@ -10,6 +10,6 @@
 #define Particle_Filter_process_function_h
 
 double
-process_function(double x, int t, double n);
+*process_function(double *x, int t, double n, char dim);
 
 #endif
