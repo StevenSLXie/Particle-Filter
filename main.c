@@ -13,6 +13,7 @@
 #include "random_number_gen.h"
 #include "process_function.h"
 #include "measure_function.h"
+#include "euclid_dist.h"
 
 
 int main(int argc, const char * argv[])
@@ -22,8 +23,8 @@ int main(int argc, const char * argv[])
     
 
     double x[dim] = {10,20}; //initial actual state
-    float n_sys_cov = 0.25; // noise covariance in the system
-    float n_mea_cov = 0.02; // noise covariance in the measurement
+    float n_sys_cov = 0.2; // noise covariance in the system
+    float n_mea_cov = 0.2; // noise covariance in the measurement
     const int T = 100; // tracking times
     const int N = 30; // number of particles
     double z[dim];
@@ -71,7 +72,8 @@ int main(int argc, const char * argv[])
             for(int k = 0;k<dim;k++)
                 z_p[i][k] = *(p+k);
 
-            weight[i] = exp(-pow(z[0]-z_p[i][0],2)*0.5*n_mea_cov);
+            //weight[i] = exp(-pow(z[0]-z_p[i][0],2)*0.5*n_mea_cov);
+            weight[i] = exp(-euclid_dist(z, z_p[i]));
             //printf("%f\n",weight[i]);
         }
         
@@ -105,7 +107,9 @@ int main(int argc, const char * argv[])
             x_est[k] = x_est[k] / N;
         
         for(int k=0;k<dim;k++)
-            printf("%f\t%f\n",x[k],x_est[k]);
+            printf("\t%f\t%f",x[k],x_est[k]);
+        
+        printf("\n");
     }
     
     //free(temp);
