@@ -10,6 +10,17 @@
 #include <stdlib.h>
 #include <time.h>
 
+
+void
+init(){
+    static int flag;
+    if(0 == flag){
+        srand((unsigned)time(NULL));
+        flag = 1;
+    }
+    return;
+}
+
 // generate a random number following normal distribution
 
 double
@@ -20,7 +31,8 @@ randn (double mu, double sigma)
     static int call = 0;
     
     //static int seed = 0;
-    srand((unsigned)time(NULL));
+    //srand((unsigned)time(NULL));
+    init();
     
     if (call == 1)
     {
@@ -49,7 +61,8 @@ randn (double mu, double sigma)
 double
 randu(int a, int b)
 {
-    srand((unsigned)time(NULL));
+    init();
+    //srand((unsigned)time(NULL));
     //static int seed = 0;
     //srand(seed++);
     

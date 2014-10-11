@@ -23,12 +23,11 @@
 int main(int argc, const char * argv[])
 {
     // Initialize variables
-    //const char DIM = 2;
-    
+
 
     double x[DIM] = {10,20}; //initial actual state
-    float n_sys_cov = 0.2; // noise covariance in the system
-    float n_mea_cov = 0.2; // noise covariance in the measurement
+    float n_sys_cov = 0.002; // noise covariance in the system
+    float n_mea_cov = 0.002; // noise covariance in the measurement
     double z[DIM];
     double *p;
     p = measure_function(x, n_mea_cov,DIM);
