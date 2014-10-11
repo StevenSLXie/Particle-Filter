@@ -16,7 +16,7 @@
 #include "euclid_dist.h"
 #include "particle.h"
 
-#define N 30    // number of particles
+#define N 300  // number of particles
 #define T 100   // tracking time duration
 //#define DIM 2   // dimension of the variable
 #define SYS_COV 0.2  // noise covariance in the system
@@ -77,7 +77,7 @@ int main(int argc, const char * argv[])
                 particles[i].z[k] = *(p+k);
 
             //weight[i] = exp(-pow(z[0]-z_p[i][0],2)*0.5*MEA_COV);
-            particles[i].weight = exp(-euclid_dist(state.z, particles[i].z));
+            particles[i].weight = exp(-euclid_dist(state.z, particles[i].z, DIM));
             //printf("%f\n",weight[i]);
         }
         

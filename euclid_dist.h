@@ -10,6 +10,6 @@
 #define Particle_Filter_euclid_dist_h
 
 double
-euclid_dist(double *x, double *y);
+euclid_dist(double *x, double *y, int dim);
 
 #endif

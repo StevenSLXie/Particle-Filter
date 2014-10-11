@@ -9,7 +9,12 @@
 #include <math.h>
 
 double
-euclid_dist(double *x, double *y){
+euclid_dist(double *x, double *y, int dim){
     
-    return sqrt(pow(x[0]-y[0],2)+pow(x[1]-y[1],2));
+    double temp = 0;
+    for(int i=0;i<dim;i++)
+        temp += pow(x[i]-y[i],2);
+    
+    temp = sqrt(temp);
+    return temp;
 }
