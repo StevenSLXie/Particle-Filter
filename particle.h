@@ -9,7 +9,7 @@
 #ifndef Particle_Filter_particle_h
 #define Particle_Filter_particle_h
 
-#define DIM 2
+#define DIM 3
 
 struct particle{
     double x[DIM];

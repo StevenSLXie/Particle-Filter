@@ -18,7 +18,7 @@
 
 #define N 30    // number of particles
 #define T 100   // tracking time duration
-#define DIM 2   // dimension of the variable
+//#define DIM 2   // dimension of the variable
 #define SYS_COV 0.2  // noise covariance in the system
 #define MEA_COV 0.2  // noise covariance in the measurement
 #define V 400 // variance of the particles
@@ -33,6 +33,7 @@ int main(int argc, const char * argv[])
     
     state.x[0] = 10;
     state.x[1] = 20;
+    state.x[2] = 30;
 
     double *p;
     p = measure_function(state.x, MEA_COV,DIM);
@@ -45,15 +46,17 @@ int main(int argc, const char * argv[])
     struct particle particles[N];
     
     for(int i=0;i<N;i++){
-        particles[i].x[0] = randn(0,sqrt(V));
-        particles[i].x[1] = randn(0,sqrt(V));
+        for(int k=0;k<DIM;k++){
+            particles[i].x[k] = randn(0,sqrt(V));
+        }
+        //particles[i].x[1] = randn(0,sqrt(V));
         particles[i].weight = 1;
     }
     
     double sum = 0;
     double temp[N][DIM];  // a copy of the particle
     
-    double x_est[2] = {0,0};
+    double x_est[DIM] = {0,0,0};
     
     // The estimation process
     for(int t = 1;t <= T; t++){
@@ -112,12 +115,6 @@ int main(int argc, const char * argv[])
         
         printf("\n");
     }
-    
-    //free(temp);
-    
-    
-        
-    
     return 0;
 }
 

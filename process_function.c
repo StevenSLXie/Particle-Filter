@@ -18,10 +18,11 @@ double
     // n is the noise covariance
     // dim is the dimension of the state
     
-    if (2 == dim){
-        static double r[2];
+    if (3 == dim){
+        static double r[3];
         r[0] = (0.5*x[0] + 25*x[0]/(1+pow(x[0], 2))+8*cos(1.2*(t-1)) + randn(0,n));
         r[1] = (x[1]+randn(0,n));
+        r[2] = x[1]+x[2]+randn(0, n*3);
         return r;
     }
     else if(1 == dim){

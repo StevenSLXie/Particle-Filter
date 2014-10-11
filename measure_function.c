@@ -16,11 +16,12 @@ double *measure_function(double *x, double n, char dim)
     // x is the state
     // n is the noise covariance
     // dim is the dimension of the state. Here assume dim=2
-    if(2 == dim){
+    if(3 == dim){
         // define your function
-        static double r[2];
+        static double r[3];
         r[0] = (pow(x[0],2)/20+randn(0,n));
         r[1] = (10*x[1] + randn(0,n));
+        r[2] = (x[2]*x[1])+randn(0,2*n);
         return r;
     }
     else if(1 == dim){
