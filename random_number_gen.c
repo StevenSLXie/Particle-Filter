@@ -9,6 +9,7 @@
 #include <math.h>
 #include <stdlib.h>
 #include <time.h>
+#include "particle.h"
 
 
 void
@@ -71,7 +72,7 @@ randu(int a, int b)
 }
 
 int
-sample_by_weight(double weight[], int N)
+sample_by_weight(struct particle p[], int N)
 {
     double *sum;
     sum = (double*)calloc(N,sizeof(double));
@@ -83,7 +84,7 @@ sample_by_weight(double weight[], int N)
     for(int i=0;i< N;i++){
         for(int j=0;j<= i;j++)
         {
-            sum[i] += weight[j];
+            sum[i] += p[j].weight;
         }
     }
     

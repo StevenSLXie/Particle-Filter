@@ -20,7 +20,7 @@ double *measure_function(double *x, double n, char dim)
         // define your function
         static double r[2];
         r[0] = (pow(x[0],2)/20+randn(0,n));
-        r[1] = (x[0]*x[1] + randn(0,n));
+        r[1] = (10*x[1] + randn(0,n));
         return r;
     }
     else if(1 == dim){

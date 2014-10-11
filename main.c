@@ -14,74 +14,74 @@
 #include "process_function.h"
 #include "measure_function.h"
 #include "euclid_dist.h"
+#include "particle.h"
 
 #define N 30    // number of particles
 #define T 100   // tracking time duration
 #define DIM 2   // dimension of the variable
+#define SYS_COV 0.2  // noise covariance in the system
+#define MEA_COV 0.2  // noise covariance in the measurement
+#define V 400 // variance of the particles
+
 
 
 int main(int argc, const char * argv[])
 {
-    // Initialize variables
+    // Initialize the state
+    
+    struct particle state;
+    
+    state.x[0] = 10;
+    state.x[1] = 20;
 
-
-    double x[DIM] = {10,20}; //initial actual state
-    float n_sys_cov = 0.002; // noise covariance in the system
-    float n_mea_cov = 0.002; // noise covariance in the measurement
-    double z[DIM];
     double *p;
-    p = measure_function(x, n_mea_cov,DIM);
+    p = measure_function(state.x, MEA_COV,DIM);
+    
     for(int i = 0;i<DIM;i++)
-        z[i] = *(p+i);
+        state.z[i] = *(p+i);
     
-    double x_p[N][DIM];  // particles
-    double z_p[N][DIM];  // outputs of the particles
-    double weight[N]; // weights for resampling
+    // initialize the particles
     
-    int V = 10; // variance of the initial state
+    struct particle particles[N];
     
-    // Initialize the particles
-    
-    for(int i=0;i< N;i++)
-    {
-        for(int k=0;k<DIM;k++){
-            x_p[i][k] = randn(x[k],sqrt(V));
-        }
+    for(int i=0;i<N;i++){
+        particles[i].x[0] = randn(0,sqrt(V));
+        particles[i].x[1] = randn(0,sqrt(V));
+        particles[i].weight = 1;
     }
     
     double sum = 0;
     double temp[N][DIM];  // a copy of the particle
-    //temp = (double**)calloc(N*DIM,sizeof(double));
     
     double x_est[2] = {0,0};
     
     // The estimation process
     for(int t = 1;t <= T; t++){
-        p = process_function(x, t, n_sys_cov,DIM);
+        p = process_function(state.x, t, SYS_COV,DIM);
         for(int k = 0;k < DIM;k++)
-            x[k] = *(p+k);
-        p = measure_function(x, n_mea_cov,DIM);
+            state.x[k] = *(p+k);
+        p = measure_function(state.x, MEA_COV,DIM);
         for(int k = 0;k<DIM;k++)
-            z[k] = *(p+k);
+            state.z[k] = *(p+k);
         
         for(int i = 0;i < N;i++){
-            p = process_function(x_p[i], t, n_sys_cov,DIM);
+            p = process_function(particles[i].x, t, SYS_COV,DIM);
             for(int k = 0;k<DIM;k++)
-                x_p[i][k] = *(p+k);
+                particles[i].x[k] = *(p+k);
             
-            p = measure_function(x_p[i], n_mea_cov,DIM);
+            p = measure_function(particles[i].x, MEA_COV,DIM);
             for(int k = 0;k<DIM;k++)
-                z_p[i][k] = *(p+k);
+                particles[i].z[k] = *(p+k);
 
-            //weight[i] = exp(-pow(z[0]-z_p[i][0],2)*0.5*n_mea_cov);
-            weight[i] = exp(-euclid_dist(z, z_p[i]));
+            //weight[i] = exp(-pow(z[0]-z_p[i][0],2)*0.5*MEA_COV);
+            particles[i].weight = exp(-euclid_dist(state.z, particles[i].z));
             //printf("%f\n",weight[i]);
         }
         
         for(int i = 0;i < N; i++)
-            sum += weight[i];
+            sum += particles[i].weight;
         for(int i = 0;i < N; i++)
-            weight[i] /= sum;
+            particles[i].weight /= sum;
         
         sum = 0;
         
@@ -91,16 +91,16 @@ int main(int argc, const char * argv[])
         for(int i=0;i<N;i++)
         {
             for(int k = 0;k<DIM;k++){
-                temp[i][k] = x_p[i][k];
+                temp[i][k] = particles[i].x[k];
             }
         }
         
         int sample = 0;
         for(int i=0;i<N;i++){
-            sample = sample_by_weight(weight, N);
+            sample = sample_by_weight(particles, N);
             for(int k = 0;k<DIM;k++){
-                x_p[i][k] = temp[sample][k];
-                x_est[k] += x_p[i][k];
+                particles[i].x[k] = temp[sample][k];
+                x_est[k] += particles[i].x[k];
             }
         }
         
@@ -108,7 +108,7 @@ int main(int argc, const char * argv[])
             x_est[k] = x_est[k] / N;
         
         for(int k=0;k<DIM;k++)
-            printf("\t%f\t%f",x[k],x_est[k]);
+            printf("\t%f\t%f",state.x[k],x_est[k]);
         
         printf("\n");
     }

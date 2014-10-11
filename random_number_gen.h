@@ -9,9 +9,11 @@
 #ifndef Particle_Filter_random_number_gen_h
 #define Particle_Filter_random_number_gen_h
 
+#include "particle.h"
+
 double randn (double mu, double sigma);
 double randu (int a, int b);
-int sample_by_weight(double *weight, int N);
+int sample_by_weight(struct particle p[], int N);
 
 
 #endif
