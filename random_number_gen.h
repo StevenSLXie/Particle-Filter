@@ -13,7 +13,6 @@
 
 double randn (double mu, double sigma);
 double randu (int a, int b);
-int sample_by_weight(struct particle p[], int N);
 
 
 #endif

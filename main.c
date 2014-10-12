@@ -15,8 +15,9 @@
 #include "measure_function.h"
 #include "euclid_dist.h"
 #include "particle.h"
+#include "resampling.h"
 
-#define N 300  // number of particles
+#define N 300 // number of particles
 #define T 100   // tracking time duration
 //#define DIM 2   // dimension of the variable
 #define SYS_COV 0.2  // noise covariance in the system
@@ -75,10 +76,9 @@ int main(int argc, const char * argv[])
             p = measure_function(particles[i].x, MEA_COV,DIM);
             for(int k = 0;k<DIM;k++)
                 particles[i].z[k] = *(p+k);
-
-            //weight[i] = exp(-pow(z[0]-z_p[i][0],2)*0.5*MEA_COV);
+            
             particles[i].weight = exp(-euclid_dist(state.z, particles[i].z, DIM));
-            //printf("%f\n",weight[i]);
+            
         }
         
         for(int i = 0;i < N; i++)
@@ -91,6 +91,7 @@ int main(int argc, const char * argv[])
         // Resampling
         
         
+        // keep a copy of the old particle
         for(int i=0;i<N;i++)
         {
             for(int k = 0;k<DIM;k++){
@@ -98,9 +99,11 @@ int main(int argc, const char * argv[])
             }
         }
         
+        // multimodal resampling
         int sample = 0;
         for(int i=0;i<N;i++){
-            sample = sample_by_weight(particles, N);
+            sample = multimodal_resampling(particles, N);
+            //sample = stratified_resampling(particles,N);
             for(int k = 0;k<DIM;k++){
                 particles[i].x[k] = temp[sample][k];
                 x_est[k] += particles[i].x[k];
@@ -110,8 +113,10 @@ int main(int argc, const char * argv[])
         for(int k=0;k<DIM;k++)
             x_est[k] = x_est[k] / N;
         
-        for(int k=0;k<DIM;k++)
-            printf("\t%f\t%f",state.x[k],x_est[k]);
+        //for(int k=0;k<DIM;k++)
+        //    printf("\t%f\t%f",state.x[k],x_est[k]);
+        
+        printf("%f\t",euclid_dist(state.x, x_est, DIM));
         
         printf("\n");
     }

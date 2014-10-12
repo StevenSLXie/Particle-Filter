@@ -71,29 +71,3 @@ randu(int a, int b)
     return a+(b-a)*u;
 }
 
-int
-sample_by_weight(struct particle p[], int N)
-{
-    double *sum;
-    sum = (double*)calloc(N,sizeof(double));
-    //double sum[N];
-    
-    for(int i =0;i<N;i++)
-        sum[i] = 0;
-    
-    for(int i=0;i< N;i++){
-        for(int j=0;j<= i;j++)
-        {
-            sum[i] += p[j].weight;
-        }
-    }
-    
-    double x = randu(0,1);
-    for(int i = 0;i<N;i++){
-        if(sum[i]>x){
-            free(sum);
-            return i;
-        }
-    }
-    return -1; //error
-}
