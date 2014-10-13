@@ -12,6 +12,8 @@
 #include <stdlib.h>
 
 
+
+
 void cum_sum(struct particle p[], double *sum, int N){
     
     for(int i =0;i<N;i++)
@@ -76,7 +78,24 @@ int stratified_resampling(struct particle p[], int N){
     
     return index;
     
-    
+}
+
+int
+resampling(struct particle p[], int N, resampling_t resampling){
+    int sample = 0;
+    switch (resampling) {
+        case MULTIMODAL:
+            sample = multimodal_resampling(p, N);
+            break;
+            
+        case STRATIFIED:
+            sample = stratified_resampling(p,N);
+            break;
+            
+        default:
+            break;
+    }
+    return sample;
 }
 
 

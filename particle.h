@@ -17,4 +17,8 @@ struct particle{
     double weight;
 };
 
+typedef enum{
+    MULTIMODAL,STRATIFIED,SYSTEMATIC
+}resampling_t;
+
 #endif

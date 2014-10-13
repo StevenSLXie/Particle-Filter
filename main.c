@@ -17,7 +17,7 @@
 #include "particle.h"
 #include "resampling.h"
 
-#define N 110 // number of particles
+#define N 150 // number of particles
 #define T 100   // tracking time duration
 //#define DIM 2   // dimension of the variable
 #define SYS_COV 0.2  // noise covariance in the system
@@ -29,6 +29,8 @@
 int main(int argc, const char * argv[])
 {
     // Initialize the state
+    
+    resampling_t method = STRATIFIED; // default:NULTIMODAL
     
     struct particle state;
     
@@ -101,11 +103,18 @@ int main(int argc, const char * argv[])
             }
         }
         
-        // multimodal resampling
+        //  resampling
+        // 1: multimodal resampling
+        // 2: stratified resampling
+        // 3: systematic resampling
+        
         int sample = 0;
         for(int i=0;i<N;i++){
             //sample = multimodal_resampling(particles, N);
-            sample = stratified_resampling(particles,N);
+            //sample = stratified_resampling(particles,N);
+            
+            sample = resampling(particles, N, method);
+            
             for(int k = 0;k<DIM;k++){
                 particles[i].x[k] = temp[sample][k];
                 x_est[k] += particles[i].x[k];
