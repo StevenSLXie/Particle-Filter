@@ -12,7 +12,7 @@
 #include "particle.h"
 
 double randn (double mu, double sigma);
-double randu (int a, int b);
+double randu (double a, double b);
 
 
 #endif

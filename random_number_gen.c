@@ -60,7 +60,7 @@ randn (double mu, double sigma)
 
 // generate a random number following uniform distribution from [a,b]
 double
-randu(int a, int b)
+randu(double a, double b)
 {
     init();
     //srand((unsigned)time(NULL));

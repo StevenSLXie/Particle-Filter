@@ -17,12 +17,12 @@
 #include "particle.h"
 #include "resampling.h"
 
-#define N 300 // number of particles
+#define N 110 // number of particles
 #define T 100   // tracking time duration
 //#define DIM 2   // dimension of the variable
 #define SYS_COV 0.2  // noise covariance in the system
 #define MEA_COV 0.2  // noise covariance in the measurement
-#define V 400 // variance of the particles
+#define V 800 // variance of the particles
 
 
 
@@ -77,12 +77,14 @@ int main(int argc, const char * argv[])
             for(int k = 0;k<DIM;k++)
                 particles[i].z[k] = *(p+k);
             
-            particles[i].weight = exp(-euclid_dist(state.z, particles[i].z, DIM));
+            //particles[i].weight = exp(-euclid_dist(state.z, particles[i].z, DIM));
+            particles[i].weight = 1.0/euclid_dist(state.z, particles[i].z, DIM);
             
         }
         
         for(int i = 0;i < N; i++)
             sum += particles[i].weight;
+        //sum += 0.00000000001;
         for(int i = 0;i < N; i++)
             particles[i].weight /= sum;
         
@@ -102,8 +104,8 @@ int main(int argc, const char * argv[])
         // multimodal resampling
         int sample = 0;
         for(int i=0;i<N;i++){
-            sample = multimodal_resampling(particles, N);
-            //sample = stratified_resampling(particles,N);
+            //sample = multimodal_resampling(particles, N);
+            sample = stratified_resampling(particles,N);
             for(int k = 0;k<DIM;k++){
                 particles[i].x[k] = temp[sample][k];
                 x_est[k] += particles[i].x[k];
