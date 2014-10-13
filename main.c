@@ -30,7 +30,7 @@ int main(int argc, const char * argv[])
 {
     // Initialize the state
     
-    resampling_t method = STRATIFIED; // default:NULTIMODAL
+    resampling_t method = SYSTEMATIC; // default:NULTIMODAL
     
     struct particle state;
     
@@ -124,8 +124,8 @@ int main(int argc, const char * argv[])
         for(int k=0;k<DIM;k++)
             x_est[k] = x_est[k] / N;
         
-        //for(int k=0;k<DIM;k++)
-        //    printf("\t%f\t%f",state.x[k],x_est[k]);
+        for(int k=0;k<DIM;k++)
+            printf("\t%f\t%f",state.x[k],x_est[k]);
         
         printf("%f\t",euclid_dist(state.x, x_est, DIM));
         

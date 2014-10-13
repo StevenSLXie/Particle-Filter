@@ -12,8 +12,6 @@
 #include <stdlib.h>
 
 
-
-
 void cum_sum(struct particle p[], double *sum, int N){
     
     for(int i =0;i<N;i++)
@@ -69,11 +67,43 @@ int stratified_resampling(struct particle p[], int N){
         }
     }
     
-    printf("\t%f\t%f\t%f\n",x,sum[0],sum[N-1]);
+    //printf("\t%f\t%f\t%f\n",x,sum[0],sum[N-1]);
     
     s += (double)(1.0/N);
     
     if((1-s)<0.1/N)
+        s = 0;
+    
+    return index;
+    
+}
+
+int systematic_resampling(struct particle p[], int N){
+    static int s;
+    
+    s++;
+    
+    double sum[N];
+    
+    
+    cum_sum(p,sum,N);
+    
+    
+    double x = randu(0,(1.0/N));
+    
+    x += (float)(s-1.0)/N;  // systematic resampling
+    
+    int index;
+    
+    for(int i = 0;i<N;i++){
+        if(sum[i]>x){
+            //free(sum);
+            index = i;
+            break;
+        }
+    }
+  
+    if(N == s)
         s = 0;
     
     return index;
@@ -91,6 +121,9 @@ resampling(struct particle p[], int N, resampling_t resampling){
         case STRATIFIED:
             sample = stratified_resampling(p,N);
             break;
+            
+        case SYSTEMATIC:
+            sample = systematic_resampling(p, N);
             
         default:
             break;

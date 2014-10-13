@@ -11,10 +11,6 @@
 
 #include "particle.h"
 
-int multimodal_resampling(struct particle p[], int N);
-
-int stratified_resampling(struct particle p[], int N);
-
 int resampling(struct particle p[], int N, resampling_t resampling);
 
 
